@@ -56,7 +56,7 @@ main() {
   local packages_with_index=false
   local pages_branch=
 
-  # parse_command_line "$@"
+  parse_command_line "$@"
 
   : "${PLUGIN_CR_TOKEN:?Environment variable CR_TOKEN must be set}"
 
