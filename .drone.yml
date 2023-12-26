@@ -1,5 +1,5 @@
 kind: pipeline
-type: kubernetes
+type: docker
 name: Test
 
 trigger:
@@ -30,7 +30,7 @@ steps:
 
 ---
 kind: pipeline
-type: kubernetes
+type: docker
 name: Release
 
 trigger:
