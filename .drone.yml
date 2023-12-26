@@ -14,11 +14,11 @@ steps:
     environment:
       CR_TOKEN: "FAKE_SECRETS"
     commands:
-      - ./cr install --install_only=true
+      - ./cr.sh install --install_only=true
   - name: Check install!
     image: ubuntu:latest
     commands:
-      - ./cr version
+      - ./cr.sh version
   - name: Check root directory
     image: ubuntu:latest
     commands:
