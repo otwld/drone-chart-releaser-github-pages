@@ -1,0 +1,63 @@
+kind: pipeline
+type: kubernetes
+name: Install chart-releaser and test presence in path
+
+trigger:
+  event:
+    - pull_request
+
+steps:
+  - name: Install chart-releaser
+    image: ubuntu:latest
+    environment:
+      CR_TOKEN: "FAKE_SECRETS"
+    commands:
+      - cr install --install_only=true
+  - name: Check install!
+    image: ubuntu:latest
+    commands:
+      - cr version
+  - name: Check root directory
+    image: ubuntu:latest
+    commands:
+      - |
+        if ! git diff --stat --exit-code; then
+          echo 'should be clean'
+          exit 1
+        fi
+
+---
+kind: pipeline
+type: kubernetes
+name: Build and publish Docker image
+
+steps:
+  - name: docker
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: docker_hub_username
+      password:
+        from_secret: docker_hub_password
+      repo: otwld/drone-chart-releaser-github-pages
+      tags:
+        - latest
+        - ${DRONE_TAG}
+      ssh-agent-key:
+        from_secret: private_key
+    when:
+      event: tag
+---
+kind: pipeline
+type: kubernetes
+name: Publish release
+
+steps:
+  - name: publish
+    image: plugins/github-release
+    settings:
+      api_key:
+        from_secret: github_access_token
+      files: cr.sh
+    when:
+      event: tag
