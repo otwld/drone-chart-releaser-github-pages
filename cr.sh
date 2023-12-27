@@ -80,8 +80,6 @@ main() {
   fi
 
   echo "chart_version=${latest_tag}" >chart_version.txt
-
-  popd >/dev/null
 }
 
 read_env_vars() {
