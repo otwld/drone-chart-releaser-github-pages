@@ -1,42 +1,11 @@
-kind: pipeline
-type: docker
-name: Test
 
-trigger:
-  # event:
-  #  - pull_request
-  branch:
-    - dev
-
-steps:
-  - name: Install chart-releaser
-    image: ubuntu:latest
-    environment:
-      CR_TOKEN: "FAKE_SECRETS"
-    commands:
-      - chmod +x cr.sh
-      - ./cr.sh install --install_only=true
-  - name: Check install
-    image: ubuntu:latest
-    commands:
-      - ./cr.sh version
-  - name: Check root directory
-    image: ubuntu:latest
-    commands:
-      - |
-        if ! git diff --stat --exit-code; then
-          echo 'should be clean'
-          exit 1
-        fi
-
----
 kind: pipeline
 type: docker
 name: Release
 
 trigger:
-  event:
-    - tag
+  branch:
+    - dev
 
 steps:
   - name: docker
@@ -47,11 +16,10 @@ steps:
       password:
         from_secret: docker_hub_password
       repo: otwld/drone-chart-releaser-github-pages
+      force_tag: true
       tags:
         - latest
-        - ${DRONE_TAG}
-      ssh-agent-key:
-        from_secret: private_key
+       # - ${DRONE_TAG}
 
   - name: publish
     image: plugins/github-release
@@ -59,3 +27,6 @@ steps:
       api_key:
         from_secret: github_access_token
       files: cr.sh
+    when:
+      event:
+        - tag
