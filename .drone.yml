@@ -15,7 +15,8 @@ steps:
       - name: cache
         path: /cr
     environment:
-      INSTALL_DIR: "/cr"
+      PLUGIN_INSTALL_DIR: "/cr"
+      PLUGIN_CR_TOKEN: "FAKE_SECRETS"
     commands:
       - ./cr.sh --install_only=true
   - name: Check install

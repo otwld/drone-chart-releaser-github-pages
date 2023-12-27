@@ -43,7 +43,7 @@ main() {
   local charts_dir=charts
   local owner="$DRONE_REPO_OWNER"
   local repo="$DRONE_REPO_NAME"
-  local install_dir="$INSTALL_DIR"
+  local install_dir="$PLUGIN_INSTALL_DIR"
   local install_only=
   local skip_packaging=
   local skip_existing=
