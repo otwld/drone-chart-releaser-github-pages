@@ -13,9 +13,9 @@ steps:
     image: ubuntu:latest
     volumes:
       - name: cache
-        path: /usr/local/bin
+        path: /cr
     environment:
-      PLUGIN_INSTALL_DIR: "/usr/local/bin"
+      PLUGIN_INSTALL_DIR: "/cr"
       PLUGIN_CR_TOKEN: "FAKE_SECRETS"
     commands:
       - ./cr.sh --install_only=true
@@ -23,7 +23,7 @@ steps:
     image: ubuntu:latest
     volumes:
       - name: cache
-        path: /usr/local/bin
+        path: /cr
     commands:
       - cr version
 
