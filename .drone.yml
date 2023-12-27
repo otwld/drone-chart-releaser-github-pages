@@ -29,6 +29,7 @@ steps:
       - name: cache
         path: /tmp/bin
     commands:
+      - ls -la /tmp/bin
       - /tmp/bin/cr version
     # event:
     #  - pull_request
