@@ -19,6 +19,10 @@ steps:
       PLUGIN_CR_TOKEN: "FAKE_SECRETS"
     commands:
       - ./cr.sh --install_only=true
+    # event:
+    #  - pull_request
+    #  - tag
+
   - name: Check install
     image: ubuntu:latest
     volumes:
@@ -26,23 +30,21 @@ steps:
         path: /cr
     commands:
       - chmod +x /cr && /cr version
+    # event:
+    #  - pull_request
+    #  - tag
 
-volumes:
-  - name: cache
-    temp: {}
+  - name: Build docker
+    image: plugins/docker
+    settings:
+      repo: otwld/drone-chart-releaser-github-pages
+      dry_run: true
+    # when:
+    #  event:
+    #    - pull_request
+    #    - tag
 
----
-
-kind: pipeline
-type: docker
-name: Release
-
-trigger:
-  branch:
-    - dev
-
-steps:
-  - name: docker
+  - name: Publish docker image
     image: plugins/docker
     settings:
       username:
@@ -53,9 +55,12 @@ steps:
       force_tag: true
       tags:
         - latest
-       # - ${DRONE_TAG}
+        - ${DRONE_TAG}
+    when:
+      event:
+        - tag
 
-  - name: publish
+  - name: Publish release
     image: plugins/github-release
     settings:
       api_key:
@@ -64,3 +69,7 @@ steps:
     when:
       event:
         - tag
+
+volumes:
+  - name: cache
+    temp: {}
