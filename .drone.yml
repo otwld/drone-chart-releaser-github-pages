@@ -28,8 +28,7 @@ steps:
 
 volumes:
   - name: cache
-    temp:
-      medium: memory
+    temp: {}
 
 ---
 
