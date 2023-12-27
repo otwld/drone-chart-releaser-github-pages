@@ -1,3 +1,37 @@
+kind: pipeline
+type: docker
+name: Test
+
+trigger:
+  # event:
+  #  - pull_request
+  branch:
+    - dev
+
+steps:
+  - name: Install chart-releaser
+    image: ubuntu:latest
+    volumes:
+      - name: cache
+        path: /cr
+    environment:
+      INSTALL_DIR: "/cr"
+    commands:
+      - ./cr.sh --install_only=true
+  - name: Check install
+    image: ubuntu:latest
+    volumes:
+      - name: cache
+        path: /cr
+    commands:
+      - /cr version
+
+volumes:
+  - name: cache
+    temp:
+      medium: memory
+
+---
 
 kind: pipeline
 type: docker

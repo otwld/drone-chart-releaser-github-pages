@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Copyright The Helm Authors
+# Copyright The Helm Authors & Outworld
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -45,9 +45,9 @@ main() {
   local version="$DEFAULT_CHART_RELEASER_VERSION"
   local config=
   local charts_dir=charts
-  local owner=
-  local repo=
-  local install_dir=
+  local owner="$DRONE_REPO_OWNER"
+  local repo="$DRONE_REPO_NAME"
+  local install_dir="$INSTALL_DIR"
   local install_only=
   local skip_packaging=
   local skip_existing=
@@ -56,9 +56,9 @@ main() {
   local packages_with_index=false
   local pages_branch=
 
-  parse_command_line "$@"
+  read_env_vars
 
-  : "${PLUGIN_CR_TOKEN:?Environment variable CR_TOKEN must be set}"
+  : "${PLUGIN_CR_TOKEN:?ERROR: settings.cr_token  must be set}"
 
   local repo_root
   repo_root=$(git rev-parse --show-toplevel)
@@ -113,135 +113,69 @@ main() {
   popd >/dev/null
 }
 
-parse_command_line() {
-  while :; do
-    case "${1:-}" in
-    -h | --help)
-      show_help
-      exit
-      ;;
-    --config)
-      if [[ -n "${2:-}" ]]; then
-        config="$2"
-        shift
-      else
-        echo "ERROR: '--config' cannot be empty." >&2
-        show_help
-        exit 1
-      fi
-      ;;
-    -v | --version)
-      if [[ -n "${2:-}" ]]; then
-        version="$2"
-        shift
-      else
-        echo "ERROR: '-v|--version' cannot be empty." >&2
-        show_help
-        exit 1
-      fi
-      ;;
-    -d | --charts-dir)
-      if [[ -n "${2:-}" ]]; then
-        charts_dir="$2"
-        shift
-      else
-        echo "ERROR: '-d|--charts-dir' cannot be empty." >&2
-        show_help
-        exit 1
-      fi
-      ;;
-    -o | --owner)
-      if [[ -n "${2:-}" ]]; then
-        owner="$2"
-        shift
-      else
-        echo "ERROR: '--owner' cannot be empty." >&2
-        show_help
-        exit 1
-      fi
-      ;;
-    -r | --repo)
-      if [[ -n "${2:-}" ]]; then
-        repo="$2"
-        shift
-      else
-        echo "ERROR: '--repo' cannot be empty." >&2
-        show_help
-        exit 1
-      fi
-      ;;
-    --pages-branch)
-      if [[ -n "${2:-}" ]]; then
-        pages_branch="$2"
-        shift
-      fi
-      ;;
-    -n | --install-dir)
-      if [[ -n "${2:-}" ]]; then
-        install_dir="$2"
-        shift
-      fi
-      ;;
-    -i | --install-only)
-      if [[ -n "${2:-}" ]]; then
-        install_only="$2"
-        shift
-      fi
-      ;;
-    -s | --skip-packaging)
-      if [[ -n "${2:-}" ]]; then
-        skip_packaging="$2"
-        shift
-      fi
-      ;;
-    --skip-existing)
-      if [[ -n "${2:-}" ]]; then
-        skip_existing="$2"
-        shift
-      fi
-      ;;
-    --skip-upload)
-      if [[ -n "${2:-}" ]]; then
-          skip_upload="$2"
-          shift
-      fi
-      ;;
-    -l | --mark-as-latest)
-      if [[ -n "${2:-}" ]]; then
-        mark_as_latest="$2"
-        shift
-      fi
-      ;;
-    --packages-with-index)
-      if [[ -n "${2:-}" ]]; then
-        packages_with_index="$2"
-        shift
-      fi
-      ;;
-    *)
-      break
-      ;;
-    esac
-
-    shift
-  done
-
-  if [[ -z "$owner" ]]; then
-    echo "ERROR: '-o|--owner' is required." >&2
-    show_help
+read_env_vars() {
+  if [[ -n "$PLUGIN_CONFIG" ]]; then
+    config="$PLUGIN_CONFIG"
+  else
+    echo "ERROR: 'settings.config' cannot be empty." >&2
     exit 1
   fi
 
-  if [[ -z "$repo" ]]; then
-    echo "ERROR: '-r|--repo' is required." >&2
-    show_help
+  if [[ -n "$PLUGIN_VERSION" ]]; then
+    version="$PLUGIN_VERSION"
+  else
+    echo "ERROR: 'settings.version' cannot be empty." >&2
     exit 1
   fi
 
-  if [[ -z "$install_dir" ]]; then
-    local arch
-    arch=$(uname -m)
-    install_dir="$RUNNER_TOOL_CACHE/cr/$version/$arch"
+  # Default "charts"
+  if [[ -n "$PLUGIN_CHARTS_DIR" ]]; then
+    charts_dir="$PLUGIN_CHARTS_DIR"
+  fi
+
+  # Default $DRONE_REPO_NAME
+  if [[ -n "$PLUGIN_REPO" ]]; then
+    owner="$PLUGIN_REPO"
+  fi
+
+  # Default $DRONE_REPO_OWNER
+  if [[ -n "$PLUGIN_OWNER" ]]; then
+    repo="$PLUGIN_REPO"
+  fi
+
+  # Optional
+  if [[ -n "$PLUGIN_PAGES_BRANCH" ]]; then
+    pages_branch="$PLUGIN_PAGES_BRANCH"
+  fi
+
+  # Optional
+  if [[ -n "$PLUGIN_INSTALL_ONLY" ]]; then
+    install_only="$PLUGIN_INSTALL_ONLY"
+  fi
+
+  # Optional
+  if [[ -n "$PLUGIN_SKIP_PACKAGING" ]]; then
+    skip_packaging="$PLUGIN_SKIP_PACKAGING"
+  fi
+
+  # Optional
+  if [[ -n "$PLUGIN_SKIP_EXISTING" ]]; then
+    skip_existing="$PLUGIN_SKIP_EXISTING"
+  fi
+
+  # Optional
+  if [[ -n "$PLUGIN_SKIP_UPLOAD" ]]; then
+    skip_upload="$PLUGIN_SKIP_UPLOAD"
+  fi
+
+  # Optional
+  if [[ -n "$PLUGIN_MARK_AS_LATEST" ]]; then
+    mark_as_latest="$PLUGIN_MARK_AS_LATEST"
+  fi
+
+  # Optional
+  if [[ -n "$PLUGIN_PACKAGES_WITH_INDEX" ]]; then
+    packages_with_index="$PLUGIN_PACKAGES_WITH_INDEX"
   fi
 
   if [[ -n "$install_only" ]]; then
@@ -252,10 +186,10 @@ parse_command_line() {
 }
 
 install_chart_releaser() {
-  if [[ ! -d "$RUNNER_TOOL_CACHE" ]]; then
-    echo "Cache directory '$RUNNER_TOOL_CACHE' does not exist" >&2
-    exit 1
-  fi
+  #if [[ ! -d "$RUNNER_TOOL_CACHE" ]]; then
+  #  echo "Cache directory '$RUNNER_TOOL_CACHE' does not exist" >&2
+  #  exit 1
+  #fi
 
   if [[ ! -d "$install_dir" ]]; then
     mkdir -p "$install_dir"
@@ -327,8 +261,8 @@ release_charts() {
   if [[ "$mark_as_latest" = false ]]; then
     args+=(--make-release-latest=false)
   fi
-  if [[ -n "$PLUGIN_PAGES_BRANCH" ]]; then
-    args+=(--pages-branch "$PLUGIN_PAGES_BRANCH")
+  if [[ -n "$pages_branch" ]]; then
+    args+=(--pages-branch "$pages_branch")
   fi
 
   echo 'Releasing charts...'
@@ -348,8 +282,8 @@ update_index() {
   if [[ "$packages_with_index" = true ]]; then
     args+=(--packages-with-index --index-path .)
   fi
-  if [[ -n "$PLUGIN_PAGES_BRANCH" ]]; then
-    args+=(--pages-branch "$PLUGIN_PAGES_BRANCH")
+  if [[ -n "$pages_branch" ]]; then
+    args+=(--pages-branch "$pages_branch")
   fi
 
   echo 'Updating charts repo index...'
