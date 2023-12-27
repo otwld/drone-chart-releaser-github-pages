@@ -13,9 +13,9 @@ steps:
     image: ubuntu:latest
     volumes:
       - name: cache
-        path: /cr
+        path: /tmp/bin
     environment:
-      PLUGIN_INSTALL_DIR: "/cr"
+      PLUGIN_INSTALL_DIR: "/tmp/bin"
       PLUGIN_CR_TOKEN: "FAKE_SECRETS"
     commands:
       - ./cr.sh --install_only=true
@@ -27,10 +27,9 @@ steps:
     image: ubuntu:latest
     volumes:
       - name: cache
-        path: /cr
+        path: /tmp/bin
     commands:
-      - chmod +x /cr
-      - /cr version
+      - /tmp/bin/cr version
     # event:
     #  - pull_request
     #  - tag
