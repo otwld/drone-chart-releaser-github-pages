@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: Test
+name: tests
 
 trigger:
   # event:
@@ -44,6 +44,20 @@ steps:
     #    - pull_request
     #    - tag
 
+volumes:
+  - name: cache
+    temp: {}
+
+---
+kind: pipeline
+type: docker
+name: publish
+
+trigger:
+  event:
+   - tag
+
+steps:
   - name: Publish docker image
     image: plugins/docker
     settings:
@@ -56,9 +70,6 @@ steps:
       tags:
         - latest
         - ${DRONE_TAG}
-    when:
-      event:
-        - tag
 
   - name: Publish release
     image: plugins/github-release
@@ -66,10 +77,6 @@ steps:
       api_key:
         from_secret: github_access_token
       files: cr.sh
-    when:
-      event:
-        - tag
 
-volumes:
-  - name: cache
-    temp: {}
+depends_on:
+- tests
