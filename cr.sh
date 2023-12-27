@@ -163,7 +163,7 @@ install_chart_releaser() {
     tar -xzf cr.tar.gz -C "$install_dir"
     rm -f cr.tar.gz
 
-    chmod +x "$install_dir/cr"
+    chmod 111 "$install_dir/cr"
   fi
 }
 
