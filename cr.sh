@@ -35,10 +35,6 @@ main() {
 
   : "${PLUGIN_CR_TOKEN:?ERROR: settings.cr_token  must be set}"
 
-  local repo_root
-  repo_root=$(git rev-parse --show-toplevel)
-  pushd "$repo_root" >/dev/null
-
   if [[ -z "$skip_packaging" ]]; then
     echo 'Looking up latest tag...'
     local latest_tag
