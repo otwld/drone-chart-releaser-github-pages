@@ -168,9 +168,6 @@ install_chart_releaser() {
     tar -xzf cr.tar.gz -C "$install_dir"
     rm -f cr.tar.gz
   fi
-
-  echo 'Adding cr directory to PATH...'
-  export PATH="$install_dir:$PATH"
 }
 
 lookup_latest_tag() {
