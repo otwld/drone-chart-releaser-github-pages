@@ -19,6 +19,7 @@ steps:
       PLUGIN_CR_TOKEN: "FAKE_SECRETS"
     commands:
       - ./cr.sh --install_only=true
+      - ls -la /tmp/bin
     # event:
     #  - pull_request
     #  - tag
