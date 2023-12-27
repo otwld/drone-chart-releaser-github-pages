@@ -162,8 +162,6 @@ install_chart_releaser() {
     curl -sSLo cr.tar.gz "https://github.com/helm/chart-releaser/releases/download/$version/chart-releaser_${version#v}_linux_amd64.tar.gz"
     tar -xzf cr.tar.gz -C "$install_dir"
     rm -f cr.tar.gz
-
-    chmod 111 "$install_dir/cr"
   fi
 }
 
