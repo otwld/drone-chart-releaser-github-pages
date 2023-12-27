@@ -16,27 +16,6 @@
 
 DEFAULT_CHART_RELEASER_VERSION=v1.6.1
 
-show_help() {
-  cat <<EOF
-Usage: $(basename "$0") <options>
-
-    -h, --help                    Display help
-    -v, --version                 The chart-releaser version to use (default: $DEFAULT_CHART_RELEASER_VERSION)"
-        --config                  The path to the chart-releaser config file
-    -d, --charts-dir              The charts directory (default: charts)
-    -o, --owner                   The repo owner
-    -r, --repo                    The repo name
-        --pages-branch            The repo pages branch
-    -n, --install-dir             The Path to install the cr tool
-    -i, --install-only            Just install the cr tool
-    -s, --skip-packaging          Skip the packaging step (run your own packaging before using the releaser)
-        --skip-existing           Skip package upload if release exists
-        --skip-upload             Skip package upload, just create the release. Not needed in case of OCI upload.
-    -l, --mark-as-latest          Mark the created GitHub release as 'latest' (default: true)
-        --packages-with-index     Upload chart packages directly into publishing branch
-EOF
-}
-
 main() {
   local version="$DEFAULT_CHART_RELEASER_VERSION"
   local config=
@@ -112,16 +91,10 @@ main() {
 read_env_vars() {
   if [[ -n "$PLUGIN_CONFIG" ]]; then
     config="$PLUGIN_CONFIG"
-  else
-    echo "ERROR: 'settings.config' cannot be empty." >&2
-    exit 1
   fi
 
   if [[ -n "$PLUGIN_VERSION" ]]; then
     version="$PLUGIN_VERSION"
-  else
-    echo "ERROR: 'settings.version' cannot be empty." >&2
-    exit 1
   fi
 
   # Default "charts"
