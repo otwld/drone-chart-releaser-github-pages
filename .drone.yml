@@ -25,7 +25,7 @@ steps:
       - name: cache
         path: /cr
     commands:
-      - cr version
+      - /cr version
 
 volumes:
   - name: cache
