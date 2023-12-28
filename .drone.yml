@@ -17,9 +17,11 @@ steps:
     environment:
       PLUGIN_INSTALL_DIR: "/usr/local/bin"
       PLUGIN_CR_TOKEN: "FAKE_SECRETS"
-      $PLUGIN_INSTALL_ONLY: true
+      PLUGIN_INSTALL_ONLY: true
     commands:
+      - ls
       - ./cr.sh --install_only=true
+      - ls -la /usr/local/bin
     # event:
     #  - pull_request
     #  - tag
@@ -30,6 +32,7 @@ steps:
       - name: cache
         path: /usr/local/bin
     commands:
+      - ls -la /usr/local/bin
       - cr version
     # event:
     #  - pull_request
