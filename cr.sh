@@ -98,13 +98,14 @@ check_if_install_only() {
 
 install_chart_releaser() {
   if [[ ! -d "$install_dir" ]]; then
+    echo "Creating directory $install_dir..."
     mkdir -p "$install_dir"
-
-    echo "Installing chart-releaser on $install_dir..."
-    curl -sSLo cr.tar.gz "https://github.com/helm/chart-releaser/releases/download/$version/chart-releaser_${version#v}_linux_amd64.tar.gz"
-    tar -xzf cr.tar.gz -C "$install_dir"
-    rm -f cr.tar.gz
   fi
+
+  echo "Installing chart-releaser on $install_dir..."
+  curl -sSLo cr.tar.gz "https://github.com/helm/chart-releaser/releases/download/$version/chart-releaser_${version#v}_linux_amd64.tar.gz"
+  tar -xzf cr.tar.gz -C "$install_dir"
+  rm -f cr.tar.gz
 
   echo 'Adding cr directory to PATH...'
   export PATH="$install_dir:$PATH"
