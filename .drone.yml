@@ -19,7 +19,6 @@ steps:
       PLUGIN_CR_TOKEN: "FAKE_SECRETS"
     commands:
       - ls
-      - ls -la /tmp/bin
       - ./cr.sh --install_only=true
       - ls -la /tmp/bin
     # event:
