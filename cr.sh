@@ -17,18 +17,18 @@
 DEFAULT_CHART_RELEASER_VERSION=v1.6.1
 
 main() {
-  local version="${$PLUGIN_PLUGIN_VERSION:-$DEFAULT_CHART_RELEASER_VERSION}"
+  local version="${PLUGIN_VERSION:-$DEFAULT_CHART_RELEASER_VERSION}"
   local config="$PLUGIN_CONFIG"
-  local charts_dir="${$PLUGIN_PLUGIN_PLUGIN_CHARTS_DIR:-charts}"
-  local owner="${$PLUGIN_PLUGIN_OWNER:-$DRONE_REPO_OWNER}"
-  local repo="${$PLUGIN_PLUGIN_REPO:-$DRONE_REPO_NAME}"
-  local install_dir="${$PLUGIN_INSTALL_DIR:-/var/tmp}"
+  local charts_dir="${PLUGIN_CHARTS_DIR:-charts}"
+  local owner="${PLUGIN_OWNER:-$DRONE_REPO_OWNER}"
+  local repo="${PLUGIN_REPO:-$DRONE_REPO_NAME}"
+  local install_dir="${PLUGIN_INSTALL_DIR:-/var/tmp}"
   local install_only=$PLUGIN_INSTALL_ONLY
   local skip_packaging=$PLUGIN_SKIP_PACKAGING
   local skip_existing=$PLUGIN_SKIP_EXISTING
   local skip_upload=$PLUGIN_SKIP_UPLOAD
-  local mark_as_latest="${$PLUGIN_MARK_AS_LATEST:-true}"
-  local packages_with_index=${$PLUGIN_PLUGIN_PACKAGES_WITH_INDEX:-false}
+  local mark_as_latest="${PLUGIN_MARK_AS_LATEST:-true}"
+  local packages_with_index=${PLUGIN_PACKAGES_WITH_INDEX:-false}
   local pages_branch="$PLUGIN_PAGES_BRANCH"
 
   check_if_install_only
