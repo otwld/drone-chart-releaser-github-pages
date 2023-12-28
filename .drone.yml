@@ -19,8 +19,7 @@ steps:
       PLUGIN_CR_TOKEN: "FAKE_SECRETS"
       PLUGIN_INSTALL_ONLY: true
     commands:
-      - env
-      - ls
+      - apt-get -y update; apt-get -y install curl
       - ./cr.sh
       - ls -la /usr/local/bin
     # event:
