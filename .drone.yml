@@ -2,15 +2,13 @@ kind: pipeline
 type: docker
 name: tests
 
-trigger:
+# trigger:
   # event:
-  #  - pull_request
-  branch:
-    - dev
+    # - pull_request
 
 steps:
   - name: Install chart-releaser
-    image: ubuntu:20.04
+    image: ubuntu:latest
     volumes:
       - name: cache
         path: /usr/local/bin
@@ -21,9 +19,6 @@ steps:
     commands:
       - apt-get -y update; apt-get -y install curl
       - ./cr.sh
-    # event:
-    #  - pull_request
-    #  - tag
 
   - name: Check install
     image: ubuntu:20.04
@@ -32,19 +27,12 @@ steps:
         path: /usr/local/bin
     commands:
       - cr version
-    # event:
-    #  - pull_request
-    #  - tag
 
   - name: Build docker
     image: plugins/docker
     settings:
       repo: otwld/drone-chart-releaser-github-pages
       dry_run: true
-    # when:
-    #  event:
-    #    - pull_request
-    #    - tag
 
 volumes:
   - name: cache
@@ -55,11 +43,11 @@ kind: pipeline
 type: docker
 name: publish
 
-trigger:
+# trigger:
   # event:
-  # - tag
-  branch:
-    - dev
+  #  - tag
+  # branch:
+  #  - main
 
 steps:
   - name: Publish docker image
@@ -73,7 +61,7 @@ steps:
       force_tag: true
       tags:
         - latest
-       # - ${DRONE_TAG}
+        - $DRONE_TAG
 
   - name: Publish release
     image: plugins/github-release
@@ -82,7 +70,7 @@ steps:
         from_secret: github_access_token
       files: cr.sh
     when:
-      event:
+      - event:
         - tag
 
 depends_on:
