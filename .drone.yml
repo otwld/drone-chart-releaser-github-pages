@@ -20,7 +20,7 @@ steps:
       PLUGIN_INSTALL_ONLY: true
     commands:
       - ls
-      - ./cr.sh --install_only=true
+      - ./cr.sh
       - ls -la /usr/local/bin
     # event:
     #  - pull_request
