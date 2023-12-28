@@ -81,6 +81,9 @@ steps:
       api_key:
         from_secret: github_access_token
       files: cr.sh
+    when:
+      event:
+        - tag
 
 depends_on:
   - tests
