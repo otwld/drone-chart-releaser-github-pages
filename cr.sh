@@ -23,13 +23,13 @@ main() {
   local owner="$DRONE_REPO_OWNER"
   local repo="$DRONE_REPO_NAME"
   local install_dir="$PLUGIN_INSTALL_DIR"
-  local install_only=
-  local skip_packaging=
-  local skip_existing=
-  local skip_upload=
+  local install_only=$PLUGIN_INSTALL_ONLY
+  local skip_packaging=$PLUGIN_SKIP_PACKAGING
+  local skip_existing=$PLUGIN_SKIP_EXISTING
+  local skip_upload=$PLUGIN_SKIP_UPLOAD
   local mark_as_latest=true
   local packages_with_index=false
-  local pages_branch=
+  local pages_branch=$PLUGIN_PAGES_BRANCH
 
   read_env_vars
 
@@ -104,31 +104,6 @@ read_env_vars() {
   # Default $DRONE_REPO_OWNER
   if [[ -n "$PLUGIN_OWNER" ]]; then
     repo="$PLUGIN_REPO"
-  fi
-
-  # Optional
-  if [[ -n "$PLUGIN_PAGES_BRANCH" ]]; then
-    pages_branch="$PLUGIN_PAGES_BRANCH"
-  fi
-
-  # Optional
-  if [[ -n "$PLUGIN_INSTALL_ONLY" ]]; then
-    install_only="$PLUGIN_INSTALL_ONLY"
-  fi
-
-  # Optional
-  if [[ -n "$PLUGIN_SKIP_PACKAGING" ]]; then
-    skip_packaging="$PLUGIN_SKIP_PACKAGING"
-  fi
-
-  # Optional
-  if [[ -n "$PLUGIN_SKIP_EXISTING" ]]; then
-    skip_existing="$PLUGIN_SKIP_EXISTING"
-  fi
-
-  # Optional
-  if [[ -n "$PLUGIN_SKIP_UPLOAD" ]]; then
-    skip_upload="$PLUGIN_SKIP_UPLOAD"
   fi
 
   # Optional
