@@ -10,7 +10,7 @@ trigger:
 
 steps:
   - name: Install chart-releaser
-    image: ubuntu:latest
+    image: ubuntu:20.04
     volumes:
       - name: cache
         path: /usr/local/bin
@@ -28,7 +28,7 @@ steps:
     #  - tag
 
   - name: Check install
-    image: ubuntu:latest
+    image: ubuntu:20.04
     volumes:
       - name: cache
         path: /usr/local/bin
