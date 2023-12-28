@@ -17,21 +17,25 @@
 DEFAULT_CHART_RELEASER_VERSION=v1.6.1
 
 main() {
-  local version="$DEFAULT_CHART_RELEASER_VERSION"
-  local config=
-  local charts_dir=charts
-  local owner="$DRONE_REPO_OWNER"
-  local repo="$DRONE_REPO_NAME"
-  local install_dir="$PLUGIN_INSTALL_DIR"
+  local version="${$PLUGIN_PLUGIN_VERSION:-$DEFAULT_CHART_RELEASER_VERSION}"
+  local config="$PLUGIN_CONFIG"
+  local charts_dir="${$PLUGIN_PLUGIN_PLUGIN_CHARTS_DIR:-charts}"
+  local owner="${$PLUGIN_PLUGIN_OWNER:-$DRONE_REPO_OWNER}"
+  local repo="${$PLUGIN_PLUGIN_REPO:-$DRONE_REPO_NAME}"
+  local install_dir="${$PLUGIN_INSTALL_DIR:-/var/tmp}"
   local install_only=$PLUGIN_INSTALL_ONLY
   local skip_packaging=$PLUGIN_SKIP_PACKAGING
   local skip_existing=$PLUGIN_SKIP_EXISTING
   local skip_upload=$PLUGIN_SKIP_UPLOAD
-  local mark_as_latest=true
-  local packages_with_index=false
-  local pages_branch=$PLUGIN_PAGES_BRANCH
+  local mark_as_latest="${$PLUGIN_MARK_AS_LATEST:-true}"
+  local packages_with_index=${$PLUGIN_PLUGIN_PACKAGES_WITH_INDEX:-false}
+  local pages_branch="$PLUGIN_PAGES_BRANCH"
 
-  read_env_vars
+  check_if_install_only
+
+  local repo_root
+  repo_root=$(git rev-parse --show-toplevel)
+  pushd "$repo_root" >/dev/null
 
   : "${PLUGIN_CR_TOKEN:?ERROR: settings.cr_token  must be set}"
 
@@ -80,42 +84,11 @@ main() {
   fi
 
   echo "chart_version=${latest_tag}" >chart_version.txt
+
+  popd >/dev/null
 }
 
-read_env_vars() {
-  if [[ -n "$PLUGIN_CONFIG" ]]; then
-    config="$PLUGIN_CONFIG"
-  fi
-
-  if [[ -n "$PLUGIN_VERSION" ]]; then
-    version="$PLUGIN_VERSION"
-  fi
-
-  # Default "charts"
-  if [[ -n "$PLUGIN_CHARTS_DIR" ]]; then
-    charts_dir="$PLUGIN_CHARTS_DIR"
-  fi
-
-  # Default $DRONE_REPO_NAME
-  if [[ -n "$PLUGIN_REPO" ]]; then
-    owner="$PLUGIN_REPO"
-  fi
-
-  # Default $DRONE_REPO_OWNER
-  if [[ -n "$PLUGIN_OWNER" ]]; then
-    repo="$PLUGIN_REPO"
-  fi
-
-  # Optional
-  if [[ -n "$PLUGIN_MARK_AS_LATEST" ]]; then
-    mark_as_latest="$PLUGIN_MARK_AS_LATEST"
-  fi
-
-  # Optional
-  if [[ -n "$PLUGIN_PACKAGES_WITH_INDEX" ]]; then
-    packages_with_index="$PLUGIN_PACKAGES_WITH_INDEX"
-  fi
-
+check_if_install_only() {
   if [[ -n "$install_only" ]]; then
     echo "Will install cr tool and not run it..."
     install_chart_releaser
@@ -124,13 +97,17 @@ read_env_vars() {
 }
 
 install_chart_releaser() {
-  if [[ -d "$install_dir" ]]; then
+  if [[ ! -d "$install_dir" ]]; then
+    mkdir -p "$install_dir"
 
     echo "Installing chart-releaser on $install_dir..."
     curl -sSLo cr.tar.gz "https://github.com/helm/chart-releaser/releases/download/$version/chart-releaser_${version#v}_linux_amd64.tar.gz"
     tar -xzf cr.tar.gz -C "$install_dir"
     rm -f cr.tar.gz
   fi
+
+  echo 'Adding cr directory to PATH...'
+  export PATH="$install_dir:$PATH"
 }
 
 lookup_latest_tag() {

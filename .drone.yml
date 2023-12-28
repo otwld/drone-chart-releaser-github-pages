@@ -17,7 +17,7 @@ steps:
       PLUGIN_CR_TOKEN: "FAKE_SECRETS"
       PLUGIN_INSTALL_ONLY: true
     commands:
-      - apt-get -y update; apt-get -y install curl
+      - apt-get -y update; apt-get -y install curl git
       - ./cr.sh
 
   - name: Check install
