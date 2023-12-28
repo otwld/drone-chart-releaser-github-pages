@@ -61,7 +61,7 @@ steps:
       force_tag: true
       tags:
         - latest
-        - $DRONE_TAG
+        # - $DRONE_TAG
 
   - name: Publish release
     image: plugins/github-release
