@@ -159,6 +159,8 @@ release_charts() {
   local args=(-o "$owner" -r "$repo" -c "$(git rev-parse HEAD)")
   if [[ -n "$config" ]]; then
     args+=(--config "$config")
+  else
+    args+=(-t "$cr_token")
   fi
   if [[ "$packages_with_index" = true ]]; then
     args+=(--packages-with-index --push --skip-existing)
@@ -185,6 +187,8 @@ update_index() {
   local args=(-o "$owner" -r "$repo" --push)
   if [[ -n "$config" ]]; then
     args+=(--config "$config")
+  else
+    args+=(-t "$cr_token")
   fi
   if [[ "$packages_with_index" = true ]]; then
     args+=(--packages-with-index --index-path .)
