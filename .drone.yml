@@ -19,6 +19,7 @@ steps:
       PLUGIN_CR_TOKEN: "FAKE_SECRETS"
       PLUGIN_INSTALL_ONLY: true
     commands:
+      - env
       - ls
       - ./cr.sh
       - ls -la /usr/local/bin
