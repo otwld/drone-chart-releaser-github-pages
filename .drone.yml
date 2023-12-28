@@ -70,7 +70,7 @@ steps:
         from_secret: github_access_token
       files: cr.sh
     when:
-      - event:
+      event:
         - tag
 
 depends_on:
