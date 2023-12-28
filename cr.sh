@@ -30,6 +30,7 @@ main() {
   local mark_as_latest="${PLUGIN_MARK_AS_LATEST:-true}"
   local packages_with_index=${PLUGIN_PACKAGES_WITH_INDEX:-false}
   local pages_branch="$PLUGIN_PAGES_BRANCH"
+  local cr_token="$PLUGIN_CR_TOKEN"
 
   check_if_install_only
 
@@ -37,7 +38,7 @@ main() {
   repo_root=$(git rev-parse --show-toplevel)
   pushd "$repo_root" >/dev/null
 
-  : "${PLUGIN_CR_TOKEN:?ERROR: settings.cr_token  must be set}"
+  : "${cr_token:?ERROR: settings.cr_token  must be set}"
 
   if [[ -z "$skip_packaging" ]]; then
     echo 'Looking up latest tag...'
