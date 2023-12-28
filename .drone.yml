@@ -21,7 +21,6 @@ steps:
     commands:
       - apt-get -y update; apt-get -y install curl
       - ./cr.sh
-      - ls -la /usr/local/bin
     # event:
     #  - pull_request
     #  - tag
@@ -32,7 +31,6 @@ steps:
       - name: cache
         path: /usr/local/bin
     commands:
-      - ls -la /usr/local/bin
       - cr version
     # event:
     #  - pull_request
@@ -75,7 +73,7 @@ steps:
       force_tag: true
       tags:
         - latest
-        - ${DRONE_TAG}
+       # - ${DRONE_TAG}
 
   - name: Publish release
     image: plugins/github-release
@@ -85,4 +83,4 @@ steps:
       files: cr.sh
 
 depends_on:
-- tests
+  - tests
