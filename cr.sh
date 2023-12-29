@@ -61,7 +61,7 @@ main() {
         rm -rf .cr-index
         mkdir -p .cr-index
 
-        package_chart "$chart_file"
+        package_chart "."
 
         release_charts
         update_index
@@ -179,6 +179,7 @@ lookup_changed_charts() {
 }
 
 package_chart() {
+
   local chart="$1"
 
   local args=("$chart" --package-path .cr-release-packages)
