@@ -44,14 +44,16 @@ main() {
   if [[ -z "$skip_packaging" ]]; then
     if [[ -n "$root_package" ]]; then
 
-      echo "Looking for chart in '$charts_dir'"
+      echo "Looking for Chart.yaml in root repository"
 
       local changed_charts=()
 
-      local chart_file="$chart_dir/Chart.yaml"
+      local chart_file="Chart.yaml"
+
+      ls
 
       if [[ -f "$chart_file" ]]; then
-        echo "Chart.yaml found in '$charts_dir'"
+        echo "Chart.yaml found in root repository"
         install_chart_releaser
         rm -rf .cr-release-packages
         mkdir -p .cr-release-packages
@@ -68,7 +70,7 @@ main() {
           echo "${chart_file}"
         )" >changed_charts.txt
       else
-        echo "No Chart.yaml detected in '$charts_dir'"
+        echo "No Chart.yaml detected in root repository"
         echo "changed_charts=" >changed_charts.txt
       fi
     else
