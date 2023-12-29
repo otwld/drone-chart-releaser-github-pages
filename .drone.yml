@@ -7,7 +7,7 @@ name: tests
     # - pull_request
 
 steps:
-  - name: Install chart-releaser
+  - name: install chart-releaser
     image: ubuntu:latest
     volumes:
       - name: cache
@@ -20,7 +20,7 @@ steps:
       - apt-get -y update; apt-get -y install curl git
       - ./cr.sh
 
-  - name: Check install
+  - name: check script installation
     image: ubuntu:latest
     volumes:
       - name: cache
@@ -28,7 +28,7 @@ steps:
     commands:
       - cr version
 
-  - name: Build docker
+  - name: build docker plugin image
     image: plugins/docker
     settings:
       repo: otwld/drone-chart-releaser-github-pages
@@ -50,7 +50,7 @@ name: publish
   #  - main
 
 steps:
-  - name: Publish docker image
+  - name: publish docker plugin image
     image: plugins/docker
     settings:
       username:
@@ -63,7 +63,7 @@ steps:
         - latest
         # - $DRONE_TAG
 
-  - name: Publish release
+  - name: publish release
     image: plugins/github-release
     settings:
       api_key:

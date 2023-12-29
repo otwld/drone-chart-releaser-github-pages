@@ -31,6 +31,7 @@ main() {
   local packages_with_index=${PLUGIN_PACKAGES_WITH_INDEX:-false}
   local pages_branch="$PLUGIN_PAGES_BRANCH"
   local cr_token="$PLUGIN_CR_TOKEN"
+  local root_package=$PLUGIN_ROOT_PACKAGE
 
   check_if_install_only
 
@@ -41,40 +42,71 @@ main() {
   : "${cr_token:?ERROR: settings.cr_token  must be set}"
 
   if [[ -z "$skip_packaging" ]]; then
-    echo 'Looking up latest tag...'
-    local latest_tag
-    latest_tag=$(lookup_latest_tag)
+    if [[ -n "$root_package" ]]; then
 
-    echo "Discovering changed charts since '$latest_tag'..."
-    local changed_charts=()
-    readarray -t changed_charts <<<"$(lookup_changed_charts "$latest_tag")"
+      echo "Looking for chart in '$charts_dir'"
 
-    if [[ -n "${changed_charts[*]}" ]]; then
-      install_chart_releaser
+      local changed_charts=()
 
-      rm -rf .cr-release-packages
-      mkdir -p .cr-release-packages
+      local chart_file="$chart_dir/Chart.yaml"
 
-      rm -rf .cr-index
-      mkdir -p .cr-index
+      if [[ -f "$chart_file" ]]; then
+        echo "Chart.yaml found in '$charts_dir'"
+        install_chart_releaser
+        rm -rf .cr-release-packages
+        mkdir -p .cr-release-packages
 
-      for chart in "${changed_charts[@]}"; do
-        if [[ -d "$chart" ]]; then
-          package_chart "$chart"
-        else
-          echo "Nothing to do. No chart changes detected."
-        fi
-      done
+        rm -rf .cr-index
+        mkdir -p .cr-index
 
-      release_charts
-      update_index
-      echo "changed_charts=$(
-        IFS=,
-        echo "${changed_charts[*]}"
-      )" >changed_charts.txt
+        package_chart "$chart_file"
+
+        release_charts
+        update_index
+        echo "changed_charts=$(
+          IFS=,
+          echo "${chart_file}"
+        )" >changed_charts.txt
+      else
+        echo "No Chart.yaml detected in '$charts_dir'"
+        echo "changed_charts=" >changed_charts.txt
+      fi
     else
-      echo "Nothing to do. No chart changes detected."
-      echo "changed_charts=" >changed_charts.txt
+      echo 'Looking up latest tag...'
+      local latest_tag
+      latest_tag=$(lookup_latest_tag)
+
+      echo "Discovering changed charts since '$latest_tag'..."
+      local changed_charts=()
+      readarray -t changed_charts <<<"$(lookup_changed_charts "$latest_tag")"
+
+      if [[ -n "${changed_charts[*]}" ]]; then
+        install_chart_releaser
+
+        rm -rf .cr-release-packages
+        mkdir -p .cr-release-packages
+
+        rm -rf .cr-index
+        mkdir -p .cr-index
+
+        for chart in "${changed_charts[@]}"; do
+          if [[ -d "$chart" ]]; then
+            package_chart "$chart"
+          else
+            echo "Nothing to do. No chart changes detected."
+          fi
+        done
+
+        release_charts
+        update_index
+        echo "changed_charts=$(
+          IFS=,
+          echo "${changed_charts[*]}"
+        )" >changed_charts.txt
+      else
+        echo "Nothing to do. No chart changes detected."
+        echo "changed_charts=" >changed_charts.txt
+      fi
     fi
   else
     install_chart_releaser
