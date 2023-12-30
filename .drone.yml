@@ -2,9 +2,10 @@ kind: pipeline
 type: docker
 name: tests
 
-# trigger:
-  # event:
-    # - pull_request
+trigger:
+  event:
+    - pull_request
+    - tag
 
 steps:
   - name: install chart-releaser
@@ -43,11 +44,11 @@ kind: pipeline
 type: docker
 name: publish
 
-# trigger:
-  # event:
-  #  - tag
-  # branch:
-  #  - main
+trigger:
+  event:
+  - tag
+  branch:
+   - main
 
 steps:
   - name: publish docker plugin image
@@ -61,7 +62,7 @@ steps:
       force_tag: true
       tags:
         - latest
-        # - $DRONE_TAG
+        - $DRONE_TAG
 
   - name: publish release
     image: plugins/github-release
