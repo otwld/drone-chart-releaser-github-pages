@@ -64,7 +64,7 @@ steps:
 
 ### Pipelines examples
 
-### Example for multicharts repository
+#### Example for multicharts repository
 ```yaml
 kind: pipeline
 name: default
@@ -78,7 +78,7 @@ steps:
     skip_existing: true
     charts_dir: 'charts'  # Specify the charts directory
 ```
-### Example for single chart repository
+#### Example for single chart repository
 ```yaml
 kind: pipeline
 name: default
