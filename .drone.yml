@@ -1,0 +1,78 @@
+kind: pipeline
+type: docker
+name: tests
+
+trigger:
+  event:
+    - pull_request
+    - tag
+
+steps:
+  - name: install chart-releaser
+    image: ubuntu:latest
+    volumes:
+      - name: cache
+        path: /usr/local/bin
+    environment:
+      PLUGIN_INSTALL_DIR: "/usr/local/bin"
+      PLUGIN_CR_TOKEN: "FAKE_SECRETS"
+      PLUGIN_INSTALL_ONLY: true
+    commands:
+      - apt-get -y update; apt-get -y install curl git
+      - ./cr.sh
+
+  - name: check script installation
+    image: ubuntu:latest
+    volumes:
+      - name: cache
+        path: /usr/local/bin
+    commands:
+      - cr version
+
+  - name: build docker plugin image
+    image: plugins/docker
+    settings:
+      repo: otwld/drone-chart-releaser-github-pages
+      dry_run: true
+
+volumes:
+  - name: cache
+    temp: {}
+
+---
+kind: pipeline
+type: docker
+name: publish
+
+trigger:
+  event:
+  - tag
+  branch:
+   - main
+
+steps:
+  - name: publish docker plugin image
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: docker_hub_username
+      password:
+        from_secret: docker_hub_password
+      repo: otwld/drone-chart-releaser-github-pages
+      force_tag: true
+      tags:
+        - latest
+        - $DRONE_TAG
+
+  - name: publish release
+    image: plugins/github-release
+    settings:
+      api_key:
+        from_secret: github_access_token
+      files: cr.sh
+    when:
+      event:
+        - tag
+
+depends_on:
+  - tests
